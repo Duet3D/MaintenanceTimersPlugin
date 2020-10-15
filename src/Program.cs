@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +25,7 @@ namespace MaintenanceTimersPlugin
         /// <summary>
         /// Path to the timer list to use
         /// </summary>
-        public static string TimersFile = Path.Combine(Directory.GetCurrentDirectory(), "timers.json");
+        public static string TimersFile = "../timers.json";
 
         /// <summary>
         /// Run this application in non-SPI mode (i.e. evaluate conditions internally)
@@ -83,26 +82,17 @@ namespace MaintenanceTimersPlugin
                 }
             };
 
-            // Create the main tasks
-            Task modelObserverTask = NoSpi ? Task.Factory.StartNew(ModelObserver.Run, TaskCreationOptions.LongRunning).Unwrap() : Task.Delay(-1, Program.CancelSource.Token);
-            Task timersTask = Task.Factory.StartNew(Timers.CheckContinuously, TaskCreationOptions.LongRunning).Unwrap();
-
-            // Run this application and wait for the first task to be terminated
-            Task terminatedTask = await Task.WhenAny(modelObserverTask, timersTask);
-            if (terminatedTask.IsFaulted && !CancelSource.IsCancellationRequested)
-            {
-                Console.WriteLine("[err] Unhandled exception: {0}", terminatedTask.Exception);
-            }
-            CancelSource.Cancel();
-
-            // Wait for the remaining tasks to exit
+            // Keep the timers ticking...
             try
             {
-                await Task.WhenAll(modelObserverTask, timersTask);
+                await Timers.CheckContinuously();
             }
-            catch
+            catch (Exception e)
             {
-                // ignored
+                if (!(e is OperationCanceledException) || !Program.CancelSource.IsCancellationRequested)
+                {
+                    Console.WriteLine("[err] Unhandled exception: {0}", e);
+                }
             }
         }
     }

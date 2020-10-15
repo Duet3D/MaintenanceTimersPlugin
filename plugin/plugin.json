@@ -1,0 +1,21 @@
+{
+  "name": "Maintenance Timers",
+  "author": "Duet3D Ltd",
+  "version": "1.0.0",
+  "license": "LGPL-3.0",
+  "sourceRepository": "https://github.com/Duet3D/MaintenanceTimersPlugin",
+  "dwcVersion": "3.2.0-beta3",
+  "dwcDependencies": [],
+  "dwcResources": [],
+  "sbcRequired": true,
+  "sbcDsfVersion": "3.2",
+  "sbcData": {},
+  "sbcExecutable": "MaintenanceTimersPlugin",
+  "sbcExecutableArguments": null,
+  "sbcOutputRedirected": false,
+  "sbcPermissions": [
+    "CommandExecution"
+  ],
+  "sbcDependencies": [],
+  "rrfVersion": null
+}

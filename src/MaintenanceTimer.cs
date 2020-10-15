@@ -8,6 +8,16 @@ namespace MaintenanceTimersPlugin
     public class MaintenanceTimer
     {
         /// <summary>
+        /// Short name of the timer used to identify it
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// User-defined title for this timer
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
         /// Initial value of this timer (in mins).
         /// If it is 0, the timer counts up
         /// </summary>
@@ -19,12 +29,12 @@ namespace MaintenanceTimersPlugin
         public int Value { get; set; }
 
         /// <summary>
-        /// List of conditions to be met in order for this timer to be updated
+        /// List of conditions (expressions) to be met in order for this timer to be updated
         /// </summary>
         public List<string> Conditions { get; set; } = new List<string>();
 
         /// <summary>
-        /// Threshold value (in mins) or -1 
+        /// Threshold value (in mins) or -1 if not applicable
         /// </summary>
         public int ThresholdValue { get; set; }
 
