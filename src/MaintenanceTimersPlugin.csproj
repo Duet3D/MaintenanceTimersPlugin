@@ -10,16 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DuetAPI" Version="3.2.0-beta3" />
+    <PackageReference Include="DuetAPIClient" Version="3.2.0-beta3" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="DuetAPI">
-      <HintPath>..\..\DuetSoftwareFramework\src\DuetAPI\bin\Debug\netcoreapp3.1\DuetAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="DuetAPIClient">
-      <HintPath>..\..\DuetSoftwareFramework\src\DuetAPIClient\bin\Debug\netcoreapp3.1\DuetAPIClient.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

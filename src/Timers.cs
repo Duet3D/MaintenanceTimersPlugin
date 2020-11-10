@@ -1,4 +1,5 @@
-﻿using DuetAPIClient;
+﻿using DuetAPI.ObjectModel;
+using DuetAPIClient;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -84,7 +85,7 @@ namespace MaintenanceTimersPlugin
                                 catch (Exception e)
                                 {
                                     conditionsMet = false;
-                                    await commandConnection.WriteMessage(DuetAPI.ObjectModel.MessageType.Error, $"Failed to evaluate condition '{condition}' of timer {timer.Name}: {e.Message}", true, true);
+                                    await commandConnection.WriteMessage(MessageType.Error, $"Failed to evaluate condition '{condition}' of timer {timer.Name}: {e.Message}", true, LogLevel.Warn);
                                     Console.WriteLine("[error] Failed to evaluate condition '{0}' of timer {1}: {2}", condition, timer.Name, e);
                                 }
                             }
@@ -112,7 +113,7 @@ namespace MaintenanceTimersPlugin
                                         if (!string.IsNullOrEmpty(result))
                                         {
                                             // Output the code result if applicable
-                                            await commandConnection.WriteMessage(DuetAPI.ObjectModel.MessageType.Success, result);
+                                            await commandConnection.WriteMessage(MessageType.Success, result, true, LogLevel.Info);
                                         }
                                     }
                                 }
