@@ -7,6 +7,8 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace MaintenanceTimersPlugin
 {
@@ -62,6 +64,8 @@ namespace MaintenanceTimersPlugin
                     using CommandConnection commandConnection = new CommandConnection();
                     await commandConnection.Connect(Program.SocketPath, Program.CancelSource.Token);
                     await commandConnection.SetPluginData("timers", TimerList);
+
+                    RegisterResetEndpoint(commandConnection);
 
                     do
                     {
@@ -140,5 +144,84 @@ namespace MaintenanceTimersPlugin
             }
             while (!Program.CancelSource.IsCancellationRequested);
         }
+
+        /// <summary>
+        /// Registers an http endpoint for this plugin
+        /// </summary>
+        /// <param name="commandConnection">The current instantiated command connection</param>
+        public static async void RegisterResetEndpoint(CommandConnection commandConnection)
+        {
+            //This is the reset endpoint which resets a selected timer.   Expected format is /machine/MaintenanceTimers/Reset?timerName={Name}
+            Console.WriteLine("Registering Reset Endpoint.");
+            var resetEndpoint = await commandConnection.AddHttpEndpoint(HttpEndpointType.PUT, "MaintenanceTimers", "Reset");
+            resetEndpoint.OnEndpointRequestReceived += async (HttpEndpointUnixSocket unixSocket, HttpEndpointConnection requestConnection) =>
+            {
+                var request = await requestConnection.ReadRequest();
+
+                //Request is missing the timerName query string. Fail with 400 error
+                if (!request.Queries.ContainsKey("timerName"))
+                {
+                    await requestConnection.SendResponse(400);
+                    return;
+                }
+
+                var timer = TimerList.FirstOrDefault(t => t.Name == request.Queries["timerName"]);
+
+                //A timer with a maching name was not found. Fail with 400 error
+                if (timer == null)
+                {
+                    await requestConnection.SendResponse(400);
+                    return;
+                }
+
+                if (!timer.CanReset)
+                {
+                    await requestConnection.SendResponse(403);
+                    return;
+                }
+
+                timer.Value = timer.InitialValue;
+                await commandConnection.SetPluginData("timers", TimerList);
+                await Save();
+                await commandConnection.WriteMessage(MessageType.Success, $"Reset '{timer.Title}'", true, LogLevel.Info);
+                await requestConnection.SendResponse();
+            };
+
+            //This is a test endpoint to change time. It adds 1 hour to each of the timers.
+            var testEndpoint = await commandConnection.AddHttpEndpoint(HttpEndpointType.PUT, "MaintenanceTimers", "test");
+            testEndpoint.OnEndpointRequestReceived += async (HttpEndpointUnixSocket unixSocket, HttpEndpointConnection requestConnection) =>
+            {
+                foreach (var timer in TimerList)
+                {
+                    timer.Value += 60;
+                }
+
+                await commandConnection.SetPluginData("timers", TimerList);
+                await Save();
+
+                await requestConnection.SendResponse();
+            };
+
+            //This test endpoint sets all the timers to 1 minute.
+            var resetToOneEndpoint = await commandConnection.AddHttpEndpoint(HttpEndpointType.PUT, "MaintenanceTimers", "testone");
+            resetToOneEndpoint.OnEndpointRequestReceived += async (HttpEndpointUnixSocket unixSocket, HttpEndpointConnection requestConnection) =>
+            {
+                foreach (var timer in TimerList)
+                {
+                    timer.Value = 1;
+                }
+
+                Console.WriteLine("Save Timer Updates");
+                await commandConnection.SetPluginData("timers", TimerList);
+                await Save();
+                await commandConnection.WriteMessage(MessageType.Success, $"Setting timers to 1 minute", true, LogLevel.Info);
+
+                await requestConnection.SendResponse();
+                requestConnection.Close();
+                Console.WriteLine("Test Update");
+            };
+
+        }
+
     }
 }

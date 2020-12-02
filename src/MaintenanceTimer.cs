@@ -42,5 +42,10 @@ namespace MaintenanceTimersPlugin
         /// Action to perform (G/M/T-code) when the timer reaches the threshold value
         /// </summary>
         public string Action { get; set; }
+
+        /// <summary>
+        /// Can this timer be reset.
+        /// </summary>
+        public bool CanReset { get; set; } = true;
     }
 }
