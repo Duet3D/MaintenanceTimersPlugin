@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace MaintenanceTimersPlugin
 {
@@ -64,7 +63,6 @@ namespace MaintenanceTimersPlugin
                     using CommandConnection commandConnection = new CommandConnection();
                     await commandConnection.Connect(Program.SocketPath, Program.CancelSource.Token);
                     await commandConnection.SetPluginData("timers", TimerList);
-
                     RegisterResetEndpoint(commandConnection);
 
                     do
@@ -151,8 +149,8 @@ namespace MaintenanceTimersPlugin
         /// <param name="commandConnection">The current instantiated command connection</param>
         public static async void RegisterResetEndpoint(CommandConnection commandConnection)
         {
-            //This is the reset endpoint which resets a selected timer.   Expected format is /machine/MaintenanceTimers/Reset?timerName={Name}
-            Console.WriteLine("Registering Reset Endpoint.");
+            // This is the reset endpoint which resets a selected timer. Expected format is /machine/MaintenanceTimers/Reset?timerName={Name}
+            Console.WriteLine("[info] Registering Reset Endpoint");
             var resetEndpoint = await commandConnection.AddHttpEndpoint(HttpEndpointType.PUT, "MaintenanceTimers", "Reset");
             resetEndpoint.OnEndpointRequestReceived += async (HttpEndpointUnixSocket unixSocket, HttpEndpointConnection requestConnection) =>
             {
@@ -208,10 +206,10 @@ namespace MaintenanceTimersPlugin
             {
                 foreach (var timer in TimerList)
                 {
-                    timer.Value = 1;
+                    timer.Value = timer.InitialValue;
                 }
 
-                Console.WriteLine("Save Timer Updates");
+                Console.WriteLine("[info] Save Timer Updates");
                 await commandConnection.SetPluginData("timers", TimerList);
                 await Save();
                 await commandConnection.WriteMessage(MessageType.Success, $"Setting timers to 1 minute", true, LogLevel.Info);
@@ -220,8 +218,6 @@ namespace MaintenanceTimersPlugin
                 requestConnection.Close();
                 Console.WriteLine("Test Update");
             };
-
         }
-
     }
 }

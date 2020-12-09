@@ -39,7 +39,7 @@ namespace MaintenanceTimersPlugin
         static async Task Main(string[] args)
         {
             Console.WriteLine($"Maintenance Timers Plugin v{Version}");
-            Console.WriteLine("Written by Christian Hammacher for Sole Printer");
+            Console.WriteLine("Written by Duet3D Ltd");
 
             // Parse command-line arguments
             string lastArg = string.Empty;
