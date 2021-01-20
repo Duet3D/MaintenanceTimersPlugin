@@ -10,8 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DuetAPI" Version="3.2.0-beta3" />
-    <PackageReference Include="DuetAPIClient" Version="3.2.0-beta3" />
+    <PackageReference Include="DuetAPI" Version="3.2.0" />
+    <PackageReference Include="DuetAPIClient" Version="3.2.0" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.0" />
   </ItemGroup>
 
