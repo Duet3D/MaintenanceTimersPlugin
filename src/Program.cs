@@ -25,7 +25,7 @@ namespace MaintenanceTimersPlugin
         /// <summary>
         /// Path to the timer list to use
         /// </summary>
-        public static string TimersFile = "../timers.json";
+        public static string TimersFile = "/opt/dsf/sd/sys/timers.json";
 
         /// <summary>
         /// Run this application in non-SPI mode (i.e. evaluate conditions internally)
