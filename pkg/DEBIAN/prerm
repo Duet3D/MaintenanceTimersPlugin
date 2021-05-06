@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Stop DuetPiManagementPlugin
+if (systemctl is-active -q duetpluginservice); then
+	/opt/dsf/bin/PluginManager stop MaintenanceTimers
+fi
+
+# Make manifest writable again
+chmod 660 /opt/dsf/plugins/MaintenanceTimers.json
+
