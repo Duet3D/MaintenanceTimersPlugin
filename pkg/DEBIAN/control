@@ -3,7 +3,7 @@ Version: VERSION
 Section: electronics
 Priority: standard
 Architecture: armhf
-Depends: duetpluginservice (>= 3.3.0)
+Depends: duetpluginservice (>= 3.3)
 Maintainer: Duet3D Packaging Authority <pkg@duet3d.com>
 Homepage: https://pkg.duet3d.com
 Description: Maintenance timers plugin for DSF
