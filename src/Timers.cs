@@ -29,7 +29,7 @@ namespace MaintenanceTimersPlugin
         {
             if (File.Exists(Program.TimersFile))
             {
-                using FileStream fileStream = new FileStream(Program.TimersFile, FileMode.Open, FileAccess.Read);
+                using FileStream fileStream = new(Program.TimersFile, FileMode.Open, FileAccess.Read);
                 TimerList = await JsonSerializer.DeserializeAsync<List<MaintenanceTimer>>(fileStream);
             }
         }
@@ -40,7 +40,7 @@ namespace MaintenanceTimersPlugin
         /// <returns>Asynchronous task</returns>
         public static async Task Save()
         {
-            using FileStream fileStream = new FileStream(Program.TimersFile, FileMode.Create, FileAccess.Write);
+            using FileStream fileStream = new(Program.TimersFile, FileMode.Create, FileAccess.Write);
             await JsonSerializer.SerializeAsync(fileStream, TimerList);
         }
 
@@ -60,7 +60,7 @@ namespace MaintenanceTimersPlugin
             {
                 try
                 {
-                    using CommandConnection commandConnection = new CommandConnection();
+                    using CommandConnection commandConnection = new();
                     await commandConnection.Connect(Program.SocketPath, Program.CancelSource.Token);
                     await commandConnection.SetPluginData("timers", TimerList);
                     RegisterResetEndpoint(commandConnection);

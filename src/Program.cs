@@ -15,22 +15,22 @@ namespace MaintenanceTimersPlugin
         /// <summary>
         /// Cancellation source used to terminate this application
         /// </summary>
-        public static readonly CancellationTokenSource CancelSource = new CancellationTokenSource();
+        public static readonly CancellationTokenSource CancelSource = new();
 
         /// <summary>
         /// Path to the UNIX socket provided by DCS
         /// </summary>
-        public static string SocketPath = DuetAPI.Connection.Defaults.FullSocketPath;
+        public static string SocketPath { get; private set; } = DuetAPI.Connection.Defaults.FullSocketPath;
 
         /// <summary>
         /// Path to the timer list to use
         /// </summary>
-        public static string TimersFile = "/opt/dsf/sd/sys/timers.json";
+        public static string TimersFile { get; private set; } = "/opt/dsf/sd/sys/timers.json";
 
         /// <summary>
         /// Run this application in non-SPI mode (i.e. evaluate conditions internally)
         /// </summary>
-        public static bool NoSpi = false;
+        public static bool NoSpi { get; private set; } = false;
 
         /// <summary>
         /// Entry point of this application

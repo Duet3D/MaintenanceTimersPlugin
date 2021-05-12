@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaintenanceTimersPlugin", "MaintenanceTimersPlugin.csproj", "{5E69BAD1-827F-4142-B1E3-64637A1AF087}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaintenanceTimersPlugin", "MaintenanceTimersPlugin.csproj", "{5E69BAD1-827F-4142-B1E3-64637A1AF087}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9D7950D0-BE81-4A68-B7E5-FB8C3F945C29}"
+	ProjectSection(SolutionItems) = preProject
+		..\pkg\opt\dsf\plugins\MaintenanceTimers.json = ..\pkg\opt\dsf\plugins\MaintenanceTimers.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
