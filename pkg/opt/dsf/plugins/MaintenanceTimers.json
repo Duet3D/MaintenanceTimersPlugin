@@ -13,5 +13,8 @@
   "sbcPermissions": [
     "CommandExecution",
     "RegisterHttpEndpoints"
-  ]
+  ],
+  "data": {
+    "timers": []
+  }
 }
