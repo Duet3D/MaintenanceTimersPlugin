@@ -5,7 +5,7 @@ chown dsf:dsf /opt/dsf/plugins/MaintenanceTimers.json
 chmod 440 /opt/dsf/plugins/MaintenanceTimers.json
 
 chown -R dsf:dsf /opt/dsf/plugins/MaintenanceTimers
-chmod 550 /opt/dsf/plugins/MaintenanceTimers/MaintenanceTimersPlugin
+chmod 550 /opt/dsf/plugins/MaintenanceTimers/dsf/MaintenanceTimersPlugin
 
 chown dsf:dsf /opt/dsf/sd/sys/timers.json
 chmod 660 /opt/dsf/sd/sys/timers.json
