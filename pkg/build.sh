@@ -13,13 +13,12 @@ echo "Building Debug configuration (version $version),,,"
 echo "- Building package..."
 rm -rf /tmp/maintenancetimersplugin
 cd $pwd/../src
-mkdir -p /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/opt/dsf/bin
-dotnet publish -r linux-arm -c Debug -o /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/opt/dsf/bin
+mkdir -p /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/opt/dsf/plugins/MaintenanceTimers
+dotnet publish -r linux-arm -c Debug -o /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/opt/dsf/plugins/MaintenanceTimers
 
 echo "- Arranging files..."
 cp -r $pwd/DEBIAN /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/DEBIAN
 cp -r $pwd/opt /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/
-cp -r $pwd/usr /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/usr
 sed -i "s/VERSION/$version/g" /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/opt/dsf/plugins/MaintenanceTimers.json
 sed -i "s/VERSION/$version/g" /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/DEBIAN/control
 sed -i "s/VERSION/$version/g" /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/DEBIAN/changelog

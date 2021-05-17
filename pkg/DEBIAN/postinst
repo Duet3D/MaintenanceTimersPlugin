@@ -4,13 +4,13 @@
 chown dsf:dsf /opt/dsf/plugins/MaintenanceTimers.json
 chmod 440 /opt/dsf/plugins/MaintenanceTimers.json
 
-chown -R dsf:dsf /opt/dsf/plugins/MaintenanceTimersPlugin
-chmod 755 /opt/dsf/plugins/MaintenanceTimersPlugin
+chown -R dsf:dsf /opt/dsf/plugins/MaintenanceTimers
+chmod 550 /opt/dsf/plugins/MaintenanceTimers/MaintenanceTimersPlugin
 
 chown dsf:dsf /opt/dsf/sd/sys/timers.json
 chmod 660 /opt/dsf/sd/sys/timers.json
 
-# Restart DCS to load the new manifest and start DPM
+# Restart DCS to load the new manifest and then restart the plugin
 if (systemctl is-active -q duetcontrolserver); then
 	systemctl restart duetcontrolserver
 	if (systemctl is-active -q duetpluginservice); then
