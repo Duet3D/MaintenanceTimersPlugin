@@ -63,7 +63,7 @@ namespace MaintenanceTimersPlugin
                     using CommandConnection commandConnection = new();
                     await commandConnection.Connect(Program.SocketPath, Program.CancelSource.Token);
                     await commandConnection.SetPluginData("timers", TimerList);
-                    RegisterResetEndpoint(commandConnection);
+                    await RegisterResetEndpoint(commandConnection);
 
                     do
                     {
@@ -128,6 +128,10 @@ namespace MaintenanceTimersPlugin
                             await commandConnection.SetPluginData("timers", TimerList);
                             await Save();
                         }
+                        else
+                        {
+                            commandConnection.Poll();
+                        }
 
                         // Wait one minute
                         await Task.Delay(TimeSpan.FromMinutes(1) - (DateTime.Now - startTime), Program.CancelSource.Token);
@@ -147,7 +151,7 @@ namespace MaintenanceTimersPlugin
         /// Registers an http endpoint for this plugin
         /// </summary>
         /// <param name="commandConnection">The current instantiated command connection</param>
-        public static async void RegisterResetEndpoint(CommandConnection commandConnection)
+        public static async Task RegisterResetEndpoint(CommandConnection commandConnection)
         {
             // This is the reset endpoint which resets a selected timer. Expected format is /machine/MaintenanceTimers/Reset?timerName={Name}
             Console.WriteLine("[info] Registering Reset Endpoint");
