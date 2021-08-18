@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <Version>3.3.0</Version>
+    <Version>3.4-b2</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DuetAPI" Version="3.3.0" />
-    <PackageReference Include="DuetAPIClient" Version="3.3.0" />
+    <PackageReference Include="DuetAPI" Version="3.4.0-b2" />
+    <PackageReference Include="DuetAPIClient" Version="3.4.0-b2" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.0" />
   </ItemGroup>
 
