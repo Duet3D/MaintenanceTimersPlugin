@@ -28,11 +28,6 @@ namespace MaintenanceTimersPlugin
         public static string TimersFile { get; private set; } = "/opt/dsf/sd/sys/timers.json";
 
         /// <summary>
-        /// Run this application in non-SPI mode (i.e. evaluate conditions internally)
-        /// </summary>
-        public static bool NoSpi { get; private set; } = false;
-
-        /// <summary>
         /// Entry point of this application
         /// </summary>
         /// <param name="args">Command-line arguments</param>
@@ -52,10 +47,6 @@ namespace MaintenanceTimersPlugin
                 else if (lastArg == "-t" || lastArg == "--timers-file")
                 {
                     TimersFile = arg;
-                }
-                else if (lastArg == "-D" || lastArg == "--no-spi")
-                {
-                    NoSpi = true;
                 }
                 lastArg = arg;
             }
