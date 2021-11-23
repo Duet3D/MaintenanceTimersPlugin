@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Stop the plugin first
 if (systemctl is-active -q duetcontrolserver && /opt/dsf/bin/PluginManager -q is-started MaintenanceTimers); then

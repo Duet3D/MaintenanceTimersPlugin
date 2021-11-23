@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Set ownership and permissions
 chown dsf:dsf /opt/dsf/plugins/MaintenanceTimers.json
