@@ -14,7 +14,7 @@ echo "- Building package..."
 rm -rf /tmp/maintenancetimersplugin
 cd $pwd/../src
 mkdir -p /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/opt/dsf/plugins/MaintenanceTimers/dsf
-dotnet publish -r linux-arm -c Debug -o /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/opt/dsf/plugins/MaintenanceTimers/dsf
+dotnet publish --self-contained -r linux-arm -c Debug -o /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/opt/dsf/plugins/MaintenanceTimers/dsf
 
 echo "- Arranging files..."
 cp -r $pwd/DEBIAN /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/DEBIAN
