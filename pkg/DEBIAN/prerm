@@ -1,9 +1,20 @@
-#!/bin/sh
+#!/bin/bash
 
-# Stop DuetPiManagementPlugin
-if (systemctl is-active -q duetpluginservice); then
-	/opt/dsf/bin/PluginManager stop MaintenanceTimers
+# Stop the plugin first
+if (systemctl is-active -q duetcontrolserver && /opt/dsf/bin/PluginManager -q is-started MaintenanceTimers); then
+	/opt/dsf/bin/PluginManager -q stop MaintenanceTimers
+	if [[ "$1" == "upgrade" ]]; then
+		# Restart it again when the upgrade is complete
+		touch /opt/dsf/plugins/MaintenanceTimers/.start
+	fi
+elif ([[ -e /opt/dsf/conf/plugins.txt ]] && grep -q -e "^MaintenanceTimers$" /opt/dsf/conf/plugins.txt ); then
+	sed -e '/^MaintenanceTimers$/d' -i /opt/dsf/conf/plugins.txt
+	if [[ "$1" == "upgrade" ]]; then
+		# Restart it again when the upgrade is complete
+		touch /opt/dsf/plugins/MaintenanceTimers/.start
+	fi
 fi
+
 
 # Make manifest writable again
 chmod 660 /opt/dsf/plugins/MaintenanceTimers.json
