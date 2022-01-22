@@ -33,3 +33,8 @@ The fields mean the following:
 ## Building
 
 Run `build.sh` in the `pkg` directory on a Linux machine with dotnet SDK and dpkg utilities installed to generate a Debian package.
+
+
+## Bug reports
+
+Please use the [forum](https://forum.duet3d.com) for support requests or the [DuetSoftwareFramework](https://github.com/Duet3D/DuetSoftwareFramework) GitHub repository for feature requests and bug reports.
