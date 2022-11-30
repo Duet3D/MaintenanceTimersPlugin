@@ -6,7 +6,7 @@
   "license": "LGPL-3.0",
   "sourceRepository": "https://github.com/Duet3D/MaintenanceTimersPlugin",
   "sbcRequired": true,
-  "sbcDsfVersion": "3.4-b7",
+  "sbcDsfVersion": "3.4.4",
   "sbcExecutable": "MaintenanceTimersPlugin",
   "sbcExecutableArguments": null,
   "sbcOutputRedirected": false,
