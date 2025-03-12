@@ -8,6 +8,8 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Text.Json.Serialization;
+using System.Text.Encodings.Web;
 
 namespace MaintenanceTimersPlugin
 {
@@ -19,7 +21,7 @@ namespace MaintenanceTimersPlugin
         /// <summary>
         /// List of configured mainetenance timers
         /// </summary>
-        public static List<MaintenanceTimer> TimerList { get; private set; } = new List<MaintenanceTimer>();
+        public static List<MaintenanceTimer> TimerList { get; private set; } = [];
 
         /// <summary>
         /// Task to load timers from the configured file
@@ -30,7 +32,7 @@ namespace MaintenanceTimersPlugin
             if (File.Exists(Program.TimersFile))
             {
                 using FileStream fileStream = new(Program.TimersFile, FileMode.Open, FileAccess.Read);
-                TimerList = await JsonSerializer.DeserializeAsync<List<MaintenanceTimer>>(fileStream);
+                TimerList = (List<MaintenanceTimer>)await JsonSerializer.DeserializeAsync(fileStream, typeof(List<MaintenanceTimer>), JsonContext.Default);
             }
         }
 
@@ -41,7 +43,7 @@ namespace MaintenanceTimersPlugin
         public static async Task Save()
         {
             using FileStream fileStream = new(Program.TimersFile, FileMode.Create, FileAccess.Write);
-            await JsonSerializer.SerializeAsync(fileStream, TimerList);
+            await JsonSerializer.SerializeAsync(fileStream, TimerList, typeof(List<MaintenanceTimer>), JsonContext.Default);
         }
 
         /// <summary>
@@ -62,7 +64,8 @@ namespace MaintenanceTimersPlugin
                 {
                     using CommandConnection commandConnection = new();
                     await commandConnection.Connect(Program.SocketPath, Program.CancelSource.Token);
-                    await commandConnection.SetPluginData("timers", TimerList);
+                    JsonElement pluginData = JsonSerializer.SerializeToElement(TimerList, typeof(List<MaintenanceTimer>), JsonContext.Default);
+                    await commandConnection.SetPluginData("timers", pluginData);
                     await RegisterResetEndpoint(commandConnection);
 
                     do
@@ -78,7 +81,7 @@ namespace MaintenanceTimersPlugin
                             {
                                 try
                                 {
-                                    if (!await commandConnection.EvaluateExpression<bool>(condition))
+                                    if (!(await commandConnection.EvaluateExpression(condition)).GetBoolean())
                                     {
                                         conditionsMet = false;
                                         break;
@@ -125,7 +128,8 @@ namespace MaintenanceTimersPlugin
                         // Apply new values if anything has changed
                         if (timersChanged)
                         {
-                            await commandConnection.SetPluginData("timers", TimerList);
+                            pluginData = JsonSerializer.SerializeToElement(TimerList, typeof(List<MaintenanceTimer>), JsonContext.Default);
+                            await commandConnection.SetPluginData("timers", pluginData);
                             await Save();
                         }
                         else
@@ -183,7 +187,8 @@ namespace MaintenanceTimersPlugin
                 }
 
                 timer.Value = timer.InitialValue;
-                await commandConnection.SetPluginData("timers", TimerList);
+                JsonElement pluginData = JsonSerializer.SerializeToElement(TimerList, typeof(List<MaintenanceTimer>), JsonContext.Default);
+                await commandConnection.SetPluginData("timers", pluginData);
                 await Save();
                 await commandConnection.WriteMessage(MessageType.Success, $"Reset '{timer.Title}'", true, LogLevel.Info);
                 await requestConnection.SendResponse();
@@ -198,7 +203,8 @@ namespace MaintenanceTimersPlugin
                     timer.Value += 60;
                 }
 
-                await commandConnection.SetPluginData("timers", TimerList);
+                JsonElement pluginData = JsonSerializer.SerializeToElement(TimerList, typeof(List<MaintenanceTimer>), JsonContext.Default);
+                await commandConnection.SetPluginData("timers", pluginData);
                 await Save();
 
                 await requestConnection.SendResponse();
@@ -214,7 +220,8 @@ namespace MaintenanceTimersPlugin
                 }
 
                 Console.WriteLine("[info] Save Timer Updates");
-                await commandConnection.SetPluginData("timers", TimerList);
+                JsonElement pluginData = JsonSerializer.SerializeToElement(TimerList, typeof(List<MaintenanceTimer>), JsonContext.Default);
+                await commandConnection.SetPluginData("timers", pluginData);
                 await Save();
                 await commandConnection.WriteMessage(MessageType.Success, $"Setting timers to 1 minute", true, LogLevel.Info);
 
@@ -223,5 +230,20 @@ namespace MaintenanceTimersPlugin
                 Console.WriteLine("Test Update");
             };
         }
+    }
+
+    /// <summary>
+    /// Context for JSON handling
+    /// </summary>
+    [JsonSerializable(typeof(MaintenanceTimer))]
+    [JsonSourceGenerationOptions(PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate)]
+    public sealed partial class JsonContext : JsonSerializerContext
+    {
+        static JsonContext() => Default = new JsonContext(CreateJsonSerializerOptions(Default));
+
+        private static JsonSerializerOptions CreateJsonSerializerOptions(JsonContext defaultContext) => new(defaultContext.GeneratedSerializerOptions!)
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
     }
 }
