@@ -9,7 +9,7 @@ pkgdir=$(pwd)/../..
 
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
 
-echo "Building Debug configuration (version $version),,,"
+echo "Building Debug configuration (version $version)..."
 echo "- Building package..."
 rm -rf /tmp/maintenancetimersplugin
 cd $pwd/../src

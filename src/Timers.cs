@@ -235,7 +235,7 @@ namespace MaintenanceTimersPlugin
     /// <summary>
     /// Context for JSON handling
     /// </summary>
-    [JsonSerializable(typeof(MaintenanceTimer))]
+    [JsonSerializable(typeof(List<MaintenanceTimer>))]
     [JsonSourceGenerationOptions(PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate)]
     public sealed partial class JsonContext : JsonSerializerContext
     {
