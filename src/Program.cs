@@ -3,87 +3,95 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MaintenanceTimersPlugin
+namespace MaintenanceTimersPlugin;
+
+public static class Program
 {
-    public static class Program
+    /// <summary>
+    /// Version of this application
+    /// </summary>
+    public static readonly string Version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+
+    /// <summary>
+    /// Cancellation source used to terminate this application
+    /// </summary>
+    public static readonly CancellationTokenSource CancelSource = new();
+
+    /// <summary>
+    /// Path to the UNIX socket provided by DCS
+    /// </summary>
+    public static string SocketPath { get; private set; } = DuetAPI.Connection.Defaults.FullSocketPath;
+
+    /// <summary>
+    /// Path to the timer list to use
+    /// </summary>
+    public static string TimersFile { get; private set; } = "/opt/dsf/sd/sys/timers.json";
+
+    /// <summary>
+    /// Path to the timer list to use
+    /// </summary>
+    public static string TimersBackupFile { get; private set; } = "/opt/dsf/sd/sys/timers.json.bak";
+
+    /// <summary>
+    /// Entry point of this application
+    /// </summary>
+    /// <param name="args">Command-line arguments</param>
+    static async Task Main(string[] args)
     {
-        /// <summary>
-        /// Version of this application
-        /// </summary>
-        public static readonly string Version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+        Console.WriteLine($"Maintenance Timers Plugin v{Version}");
+        Console.WriteLine("Written by Duet3D Ltd");
 
-        /// <summary>
-        /// Cancellation source used to terminate this application
-        /// </summary>
-        public static readonly CancellationTokenSource CancelSource = new();
-
-        /// <summary>
-        /// Path to the UNIX socket provided by DCS
-        /// </summary>
-        public static string SocketPath { get; private set; } = DuetAPI.Connection.Defaults.FullSocketPath;
-
-        /// <summary>
-        /// Path to the timer list to use
-        /// </summary>
-        public static string TimersFile { get; private set; } = "/opt/dsf/sd/sys/timers.json";
-
-        /// <summary>
-        /// Entry point of this application
-        /// </summary>
-        /// <param name="args">Command-line arguments</param>
-        static async Task Main(string[] args)
+        // Parse command-line arguments
+        string lastArg = string.Empty;
+        foreach (string arg in args)
         {
-            Console.WriteLine($"Maintenance Timers Plugin v{Version}");
-            Console.WriteLine("Written by Duet3D Ltd");
-
-            // Parse command-line arguments
-            string lastArg = string.Empty;
-            foreach (string arg in args)
+            if (lastArg == "-s" || lastArg == "--socket-file")
             {
-                if (lastArg == "-s" || lastArg == "--socket-file")
-                {
-                    SocketPath = arg;
-                }
-                else if (lastArg == "-t" || lastArg == "--timers-file")
-                {
-                    TimersFile = arg;
-                }
-                lastArg = arg;
+                SocketPath = arg;
             }
-
-            // Load the timers
-            await Timers.Load();
-
-            // Deal with program termination requests (SIGTERM and Ctrl+C)
-            AppDomain.CurrentDomain.ProcessExit += (sender, e) =>
+            else if (lastArg == "-t" || lastArg == "--timers-file")
             {
-                if (!CancelSource.IsCancellationRequested)
-                {
-                    Console.WriteLine("[warn] Received SIGTERM, shutting down...");
-                    CancelSource.Cancel();
-                }
-            };
-            Console.CancelKeyPress += (sender, e) =>
-            {
-                if (!CancelSource.IsCancellationRequested)
-                {
-                    Console.WriteLine("[warn] Received SIGINT, shutting down...");
-                    e.Cancel = true;
-                    CancelSource.Cancel();
-                }
-            };
-
-            // Keep the timers ticking...
-            try
-            {
-                await Timers.CheckContinuously();
+                TimersFile = arg;
             }
-            catch (Exception e)
+            lastArg = arg;
+        }
+
+        // Load the timers
+        if (!await Timers.LoadAsync(TimersFile) && !await Timers.LoadAsync(TimersBackupFile))
+        {
+            Console.WriteLine("[warn] Could not load timers from file");
+            return;
+        }
+
+        // Deal with program termination requests (SIGTERM and Ctrl+C)
+        AppDomain.CurrentDomain.ProcessExit += (sender, e) =>
+        {
+            if (!CancelSource.IsCancellationRequested)
             {
-                if (!(e is OperationCanceledException) || !Program.CancelSource.IsCancellationRequested)
-                {
-                    Console.WriteLine("[err] Unhandled exception: {0}", e);
-                }
+                Console.WriteLine("[warn] Received SIGTERM, shutting down...");
+                CancelSource.Cancel();
+            }
+        };
+        Console.CancelKeyPress += (sender, e) =>
+        {
+            if (!CancelSource.IsCancellationRequested)
+            {
+                Console.WriteLine("[warn] Received SIGINT, shutting down...");
+                e.Cancel = true;
+                CancelSource.Cancel();
+            }
+        };
+
+        // Keep the timers ticking...
+        try
+        {
+            await Timers.CheckContinuouslyAsync();
+        }
+        catch (Exception e)
+        {
+            if (e is not OperationCanceledException || !CancelSource.IsCancellationRequested)
+            {
+                Console.WriteLine("[err] Unhandled exception: {0}", e);
             }
         }
     }

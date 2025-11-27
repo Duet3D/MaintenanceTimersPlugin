@@ -2,7 +2,7 @@
 
 ## Description
 
-This plugin maintains custom timers every minute, which can be used to monitor machine usage. These timers are organized in /sys/timers.json and each timer in the timer list may provide the following fields:
+This plugin maintains custom timers every minute, which can be used to monitor machine usage. These timers are organized in `esys/timers.json` and each timer in the timer list may provide the following fields:
 
 ```
 {
@@ -29,6 +29,9 @@ The fields mean the following:
 - `thresholdValue`: Threshold value (in mins) or -1 if not applicable
 - `action`: Action to perform (G/M/T-code) when the timer reaches the threshold value
 - `canReset`: Can this timer be reset
+
+If the `timers.json` file could not be loaded, this plugin attempts to load `timers.json.bak` instead.
+Before `timers.json` is overwritten, it is also moved to `timers.json.bak`.
 
 ## Building
 

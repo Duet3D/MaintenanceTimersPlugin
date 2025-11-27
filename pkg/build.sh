@@ -9,12 +9,11 @@ pkgdir=$(pwd)/../..
 
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
 
-echo "Building Debug configuration (version $version)..."
 echo "- Building package..."
 rm -rf /tmp/maintenancetimersplugin
 cd $pwd/../src
 mkdir -p /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/opt/dsf/plugins/MaintenanceTimers/dsf
-dotnet publish --self-contained -r linux-arm -c Debug -o /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/opt/dsf/plugins/MaintenanceTimers/dsf
+dotnet publish --self-contained -r linux-arm -o /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/opt/dsf/plugins/MaintenanceTimers/dsf
 
 echo "- Arranging files..."
 cp -r $pwd/DEBIAN /tmp/maintenancetimersplugin/maintenancetimersplugin_$version/DEBIAN
@@ -26,6 +25,11 @@ sed -i "s/VERSION/$version/g" /tmp/maintenancetimersplugin/maintenancetimersplug
 echo "- Packaging files..."
 cd /tmp/maintenancetimersplugin
 dpkg-deb --build -Zxz maintenancetimersplugin_$version
-dpkg-sig -k $signkey -s builder maintenancetimersplugin_$version.deb
+if [[ -n `command -v dpkg-sig` ]]; then
+	dpkg-sig -k $signkey -s builder maintenancetimersplugin_$version.deb
+else
+	debsigs --sign=builder --default-key=$signkey maintenancetimersplugin_$version.deb
+fi
 mv /tmp/maintenancetimersplugin/maintenancetimersplugin_$version.deb $pkgdir/maintenancetimersplugin_$version.deb
-#rm -rf /tmp/maintenancetimersplugin/maintenancetimersplugin_$version
+rm -rf /tmp/maintenancetimersplugin/maintenancetimersplugin_$version
+
