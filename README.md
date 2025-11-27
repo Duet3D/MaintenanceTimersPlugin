@@ -2,7 +2,7 @@
 
 ## Description
 
-This plugin maintains custom timers every minute, which can be used to monitor machine usage. These timers are organized in `esys/timers.json` and each timer in the timer list may provide the following fields:
+This plugin maintains custom timers every minute, which can be used to monitor machine usage. These timers are organized in `/sys/timers.json` and each timer in the timer list may provide the following fields:
 
 ```
 {
